@@ -31,6 +31,35 @@ public class ParserCSV {
 		prop.forEach((p,g) -> g.forEach( gp -> System.out.println("Paziente numero "+ p +" : "+gp.toString())));
 	}
 
+	//Metodo che in base al dato in entrata ne identifica il tipo
+	public static String identifyDataType(String data){
+		String input= data.strip();
+		try {
+			Integer.parseInt(input);
+			return "Integer";
+		}catch (Exception _){}
+
+		try{
+			Float.parseFloat(input);
+			return "Float";
+		} catch (Exception _){}
+
+		try{
+			Double.parseDouble(input);
+			return "Double";
+		}catch (Exception _){}
+
+		try{
+			Long.parseLong(input);
+			return "Long";
+		}catch (Exception _){}
+
+		if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("false"))
+			return "Boolean";
+
+		return "String";
+	}
+
 	// metodo costruttore
 	private ParserCSV() {}
 
@@ -79,8 +108,8 @@ public class ParserCSV {
 
 	// metodo per separare la varie righe cercando determinati caratteri
 	private List<String> divide(String stringaCSV){
-        String[] tmp = stringaCSV.split("\\r\\n|\\r|\\n");
-        return new ArrayList<>(Arrays.asList(tmp));
+		String[] tmp = stringaCSV.split("\\r\\n|\\r|\\n");
+		return new ArrayList<>(Arrays.asList(tmp));
 	}
 
 	//Metodo che dato un file in entrata separare gli header dai dati controllando che ci siano abbastanza dati per gli header. -problema con la ricerca del file
@@ -101,9 +130,9 @@ public class ParserCSV {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
+			throw new RuntimeException(e);
+		}
+	}
 
 	//Metodo per creare le varie proprietà
 	private void createProperties() {
@@ -111,7 +140,7 @@ public class ParserCSV {
 		int index = 1;
 		String description = "A generic property that can hold any type of value.";
 		for (int i = 0; i < this.dates.size(); i++) {
-			int p = i % this.header.size() ;
+			int p = i % this.header.size();
 			Property prop = Properties.INSTANCE.singleValueProperty(
 					this.header.get(p),
 					this.header.get(p),
@@ -130,32 +159,18 @@ public class ParserCSV {
 
 	//Metodo che in base al dato restituisce una proprietà adeguata
 	private PropertyValue getPropertyValue(String date) {
-		if(identifyDataType(date).equals("Float"))
-			return new PropertyValue.FloatPropertyValue(Float.parseFloat(date));
-		else if(identifyDataType(date).equals("Integer"))
+		if(identifyDataType(date).equals("Integer"))
 			return new PropertyValue.IntPropertyValue(Integer.parseInt(date));
+		else if(identifyDataType(date).equals("Double"))
+			return new PropertyValue.DoublePropertyValue(Double.parseDouble(date));
+		else if(identifyDataType(date).equals("Float"))
+			return new PropertyValue.FloatPropertyValue(Float.parseFloat(date));
+		else if(identifyDataType(date).equals("Long"))
+			return new PropertyValue.LongPropertyValue(Long.parseLong(date));
 		else if(identifyDataType(date).equals("Boolean"))
 			return new PropertyValue.BooleanPropertyValue(Boolean.parseBoolean(date));
 		else if(identifyDataType(date).equals("String"))
 			return new PropertyValue.StringPropertyValue(date);
 		return null;
-	}
-
-	//Metodo che in base al dato in entrata ne identifica il tipo
-	private String identifyDataType(String data){
-		String input= data.strip();
-		try {
-	        Integer.parseInt(input);
-	        return "Integer";
-	    }catch (Exception _){}
-
-		try{
-			Float.parseFloat(input);
-			return "Float";
-		} catch (Exception _){}
-
-		if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("false"))
-			return "Boolean";
-		return "String";
 	}
 }
